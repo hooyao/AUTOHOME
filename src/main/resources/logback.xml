@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- ===================================== Split Line ======================================= -->
+<!-- This configuration is for developers -->
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <withJansi>true</withJansi>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%15(%thread)] %highlight(%-5level) --- %-50(%cyan(%logger{30})) : %msg %n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>
+
+
+<!-- ===================================== Split Line ======================================= -->
+<!-- This configuration is maintained for production, do not drop it !-->
+<!--<configuration>-->
+    <!--<appender name="SYSLOG" class="ch.qos.logback.classic.net.SyslogAppender">-->
+        <!--<syslogHost>172.16.30.74</syslogHost>-->
+        <!--<facility>LOCAL1</facility>-->
+        <!--<suffixPattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%15(%thread)] %-5level -&#45;&#45; %-50(%logger{36}) : %msg %n</suffixPattern>-->
+    <!--</appender>-->
+
+    <!--<root level="INFO">-->
+        <!--<appender-ref ref="SYSLOG" />-->
+    <!--</root>-->
+<!--</configuration>-->
