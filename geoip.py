@@ -25,7 +25,7 @@ exclude_cidrs = ['203.208.32.0/19']
 
 
 def main(*args):
-    # download_geoip(dest_file_name)
+    download_geoip(dest_file_name)
     firewall_file_name = retrieve_cn_cidrs()
     upload_and_update(firewall_file_name)
 
@@ -68,9 +68,11 @@ def retrieve_cn_cidrs():
     filtered_cidrs = cn_cidrs[cn_cidrs.apply(lambda x: not test_cidr_equal(x))]
     cidrs = filtered_cidrs.map(lambda x: 'add address={} list=novpn'.format(x).strip())
     values = cidrs.values
-    rsc_file_name = datetime.now().strftime("%Y-%m-%d[%H-%M-%S].rsc")
-    with_header = np.insert(values, 0, '/ip firewall address-list',axis=0)
-    np.savetxt(rsc_file_name, with_header, fmt='%s', newline='\n')
+    rsc_file_name = datetime.now().strftime("%Y-%m-%d-%H-%M-%S.rsc")
+    with_header = np.insert(values, 0, '/ip firewall address-list', axis=0)
+    with_remove = np.insert(with_header, 0,
+                            '/ip firewall address-list remove [/ip firewall address-list find list="novpn"]', axis=0)
+    np.savetxt(rsc_file_name, with_remove, fmt='%s', newline='\n')
     return rsc_file_name
 
 
@@ -94,8 +96,9 @@ def upload_and_update(firewall_file_name):
     ssh.close()
 
     api = ros.connect(host=mikrotik_host, username=mikrotik_user, password=mikrotik_pass)
-    api(cmd='/ip firewall address-list remove [/ip firewall address-list find list="novpn"]')
-    api(cmd='import file-name={}'.format(firewall_file_name))
+    params = {'file-name': firewall_file_name}
+    api(cmd='/import', **params)
+    api.close()
 
 
 if __name__ == '__main__':
